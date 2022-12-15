@@ -3,6 +3,7 @@ from .. import models, schemas
 from ..database import get_db
 from sqlalchemy.orm import Session
 from . import oauth2
+from typing import Optional
 
 router = APIRouter(
     prefix='/projects',
@@ -10,13 +11,18 @@ router = APIRouter(
 )
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=list[schemas.Project])
-def get_projects(db: Session = Depends(get_db), current_user = Depends(oauth2.get_current_user)):
-    projects = db.query(models.Projects).all()
+def get_projects(db: Session = Depends(get_db), current_user = Depends(oauth2.get_current_user),
+                limit: int = 10, skip = 0, search: Optional[str] = ""):
+    
+    projects = db.query(models.Projects).filter(models.Projects.project_name.contains(search)).limit(limit).offset(skip).all()
+
     return projects
 
 @router.get("/{id}", status_code=status.HTTP_200_OK, response_model=schemas.Project)
-def get_project(id: int, db: Session = Depends(get_db), current_user = Depends(oauth2.get_current_user)):
-    project_query = db.query(models.Projects).filter(models.Projects.project_id == id)
+def get_project(id: int, db: Session = Depends(get_db), current_user = Depends(oauth2.get_current_user),
+                limit: int = 10, skip = 0, search: Optional[str] = ""):
+
+    project_query = db.query(models.Projects).filter(models.Projects.project_id == id).limit(limit).offset(skip)
     project = project_query.first()
 
     if project is None:
@@ -28,7 +34,7 @@ def get_project(id: int, db: Session = Depends(get_db), current_user = Depends(o
 def create_project(project: schemas.ProjectCreate, db: Session = Depends(get_db),
                    current_user = Depends(oauth2.get_current_user)):
 
-    new_project = models.Projects(**project.dict())
+    new_project = models.Projects(user_id = current_user.id, **project.dict())
     db.add(new_project)
     db.commit()
     db.refresh(new_project)
@@ -43,7 +49,11 @@ def delete_project(id: int, db: Session = Depends(get_db), current_user = Depend
 
     if project is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Project with id {id} not found.")
-    
+
+    if project.user_id != current_user:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"unathorized user. You can only delete your own projects")
+
+
     delete_query.delete(synchronize_session=False)
     db.commit()
 
