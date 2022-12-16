@@ -1,2 +1,4 @@
 .python-version
-app/database.py
+.env
+app/__pycache__
+app/routers/__pycache__
