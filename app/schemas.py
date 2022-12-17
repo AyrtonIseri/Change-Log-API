@@ -2,6 +2,7 @@ from pydantic import BaseModel, validator
 from datetime import datetime
 from typing import Optional
 
+#-----------------------------------------------------------------------------
 
 class BaseUser(BaseModel):
     username: str
@@ -18,7 +19,9 @@ class UserCreate(BaseUser):
     password: str
 
 class User(BaseUser):
-    created_date: datetime
+    creation_date: datetime
+
+#-----------------------------------------------------------------------------
 
 class UserAuth(BaseModel):
     username: str
@@ -29,6 +32,34 @@ class UserAuth(BaseModel):
         assert v.isalnum(), "username must be an alphanumeric"
         return v
 
+#-----------------------------------------------------------------------------
+
+class BasePoints(BaseModel):
+    points_title: str
+    descriptions: Optional[list[str]]
+
+class PointsCreate(BasePoints):
+    pass
+
+class Points(BasePoints):
+    points_id: int
+    
+
+#-----------------------------------------------------------------------------
+
+class BaseUpdate(BaseModel):
+    update_title: str
+
+class UpdateCreate(BaseUpdate):
+    pass
+
+class Update(BaseUpdate):
+    update_id: int
+    created_by: str
+    creation_date: datetime
+    revelant_points: Points
+
+#-----------------------------------------------------------------------------
 
 class BaseProject(BaseModel):
     project_name: str
@@ -41,10 +72,12 @@ class ProjectCreate(BaseProject):
     pass
 
 class Project(BaseProject):
-    created_date: datetime
-    user_id: int
-    owner: User
+    project_id: int
+    creation_date: datetime
+    created_by: str
+    project_updates: list[Update]
 
+#-----------------------------------------------------------------------------
 
 class Token(BaseModel):
     access_token: str
@@ -52,3 +85,7 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     id: int
+
+#-----------------------------------------------------------------------------
+
+    
