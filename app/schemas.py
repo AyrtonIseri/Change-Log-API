@@ -36,7 +36,7 @@ class UserAuth(BaseModel):
 
 class BasePoints(BaseModel):
     title: str
-    descriptions: Optional[list[str]]
+    description: Optional[list[str]]
 
     class Config:
         orm_mode=True
@@ -71,7 +71,7 @@ class Update(BaseUpdate):
 class BaseProject(BaseModel):
     title: str
     active: Optional[bool]
-    
+
     class Config:
         orm_mode = True
 

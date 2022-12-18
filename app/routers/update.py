@@ -13,13 +13,11 @@ def post_relevant_points(relevant_points: list[schemas.PointsCreate], update_id:
         db.add(new_relevant_point)
         db.commit()
 
-def query_update(update_id: int, db: Session):
+def query_update(update_id: int, db: Session) -> schemas.Update:
     update = db.query(models.Updates).filter(models.Updates.id == update_id).first()
     relevant_points = db.query(models.Points).filter(models.Points.update_id == update_id).all()
     update.relevant_points = relevant_points
     return update
-
-
 
 router = APIRouter(
     prefix='/updates',
