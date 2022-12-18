@@ -14,7 +14,7 @@ router = APIRouter(
 def get_projects(db: Session = Depends(get_db), current_user = Depends(oauth2.get_current_user),
                 limit: int = 10, skip = 0, search: Optional[str] = ""):
     
-    projects = db.query(models.Projects).filter(models.Projects.project_name.contains(search)).limit(limit).offset(skip).all()
+    projects = db.query(models.Projects).filter(models.Projects.title.contains(search)).limit(limit).offset(skip).all()
 
     return projects
 
@@ -22,19 +22,19 @@ def get_projects(db: Session = Depends(get_db), current_user = Depends(oauth2.ge
 def get_project(id: int, db: Session = Depends(get_db), current_user = Depends(oauth2.get_current_user),
                 limit: int = 10, skip = 0, search: Optional[str] = ""):
 
-    project_query = db.query(models.Projects).filter(models.Projects.project_id == id).limit(limit).offset(skip)
+    project_query = db.query(models.Projects).filter(models.Projects.id == id).limit(limit).offset(skip)
     project = project_query.first()
 
     if project is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Project with id {id} not found.")
-    
+
     return project
 
 @router.post("/", status_code = status.HTTP_201_CREATED, response_model=schemas.Project)
 def create_project(project: schemas.ProjectCreate, db: Session = Depends(get_db),
                    current_user = Depends(oauth2.get_current_user)):
 
-    new_project = models.Projects(user_id = current_user.id, **project.dict())
+    new_project = models.Projects(created_by = current_user.id, **project.dict())
     db.add(new_project)
     db.commit()
     db.refresh(new_project)
@@ -44,15 +44,11 @@ def create_project(project: schemas.ProjectCreate, db: Session = Depends(get_db)
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_project(id: int, db: Session = Depends(get_db), current_user = Depends(oauth2.get_current_user)):
 
-    delete_query = db.query(models.Projects).filter(models.Projects.project_id == id)
+    delete_query = db.query(models.Projects).filter(models.Projects.id == id)
     project = delete_query.first()
 
     if project is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Project with id {id} not found.")
-
-    if project.user_id != current_user:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"unathorized user. You can only delete your own projects")
-
 
     delete_query.delete(synchronize_session=False)
     db.commit()
@@ -62,8 +58,8 @@ def delete_project(id: int, db: Session = Depends(get_db), current_user = Depend
 @router.put("/{id}", response_model=schemas.Project)
 def update_project(id: int, updated_project: schemas.ProjectCreate, db: Session = Depends(get_db),
                    current_user = Depends(oauth2.get_current_user)):
-    
-    project_query = db.query(models.Projects).filter(models.Projects.project_id == id)
+
+    project_query = db.query(models.Projects).filter(models.Projects.id == id)
     project = project_query.first()
 
     if project is None:

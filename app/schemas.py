@@ -14,7 +14,7 @@ class BaseUser(BaseModel):
 
     class Config:
         orm_mode=True
-    
+
 class UserCreate(BaseUser):
     password: str
 
@@ -35,35 +35,42 @@ class UserAuth(BaseModel):
 #-----------------------------------------------------------------------------
 
 class BasePoints(BaseModel):
-    points_title: str
+    title: str
     descriptions: Optional[list[str]]
+
+    class Config:
+        orm_mode=True
 
 class PointsCreate(BasePoints):
     pass
 
 class Points(BasePoints):
-    points_id: int
-    
+    pass
+
 
 #-----------------------------------------------------------------------------
 
 class BaseUpdate(BaseModel):
-    update_title: str
+    title: str
+    relevant_points: Optional[list[PointsCreate]]
+
+    class Config:
+        orm_mode=True
 
 class UpdateCreate(BaseUpdate):
-    pass
+    project_id: int
 
 class Update(BaseUpdate):
-    update_id: int
+    id: int
     created_by: str
     creation_date: datetime
-    revelant_points: Points
+
 
 #-----------------------------------------------------------------------------
 
 class BaseProject(BaseModel):
-    project_name: str
-    project_active: bool
+    title: str
+    active: Optional[bool]
     
     class Config:
         orm_mode = True
@@ -72,10 +79,10 @@ class ProjectCreate(BaseProject):
     pass
 
 class Project(BaseProject):
-    project_id: int
+    id: int
     creation_date: datetime
     created_by: str
-    project_updates: list[Update]
+    project_updates: Optional[list[Update]]
 
 #-----------------------------------------------------------------------------
 
@@ -88,4 +95,3 @@ class TokenData(BaseModel):
 
 #-----------------------------------------------------------------------------
 
-    
