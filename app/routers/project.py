@@ -9,6 +9,10 @@ from .update import query_update
 from datetime import datetime
 
 def get_all_updates(project_id: int, db: Session, limit: int, skip: int) -> list[schemas.Update]:
+    '''
+    queries the database and returns all updates for a given project
+    '''
+
     update_ids = db.query(models.Updates.id).filter(models.Updates.project_id == project_id).order_by(models.Updates.creation_date.desc()).offset(skip).limit(limit).all()
     update_ids = [id[0] for id in update_ids]
     update_list = []
@@ -97,9 +101,12 @@ def update_project(id: int, updated_project: schemas.ProjectCreate, db: Session 
 
     if project is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Project with id {id} not found.")
-    
+
     project_query.update(updated_project.dict(), synchronize_session=False)
 
     db.commit()
+
+    project = project_query.first()
+    project.project_updates = get_all_updates(project_id=id, db=db, limit=10, skip=0)
 
     return project_query.first()
