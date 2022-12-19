@@ -26,7 +26,7 @@ It is also worth mentioning that this API requires credential validation to oper
   - [DELETE Updates](#delete-updates)
 - [Final notes](#final-notes)
 - [Technologies used](#technologies-used)
-
+- [Next steps](#next-steps)
 
 ## Accessing the API
 
