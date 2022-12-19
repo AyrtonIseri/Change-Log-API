@@ -91,7 +91,7 @@ The project endpoint is where the frontend or client will upload new projects or
 ### GET Projects
 This method is used to retrieve all projects currently stored in the database as well as their updates and other relevant details. It offer pagination through the use of the limit and skip query parameters, and, for projects with a long update track, you can create pagination using update_limit and update_skip to limit the number of updates per project.
 
-There is also the search, date, and creator query parameters that allow for filtering when looking for projects with a specific title, in a given date or created by a certain user_id.
+There is also the search, date, and creator query parameters that allow for filtering when looking for projects with a specific title (string), in a given date (string with the yyyy-mm-dd format) or created by a certain user_id (integer).
 
 Projects and project's updates will be fetched sorted by creation date in descending order.
 
