@@ -150,6 +150,8 @@ This last method is very straight forward! Provide an update Id and delete it fr
 
 ## Final notes
 
+Note that all dates are registered and fetched in the UTC timezone. As such, it may not respond with the datetime you were expecting (even though the timestamp is precisely the same). So, please don't get upset! It is just a matter of different timezones!
+
 This project works perfectly fine with API development tools such as postman, if you wish to. Just register the [API URL](https://change-log-api.herokuapp.com/) and you are good to go!
 
 Lastly, This project was tested against most cases I could think of. If you find anything that went overlooked, please let me know or hit me with a PR :)
