@@ -164,4 +164,8 @@ Lastly, This project was tested against most cases I could think of. If you find
 - Postgres
 - SQLAlchemy
 - Heroku CLI
-- And many... many... other frameworks
+- Many other frameworks
+
+## Next steps
+
+Possible next steps are to develop a nice UI, enhancing the client's overall experience, as well as to optimize the API's infrastructure and database design to improve performance.
